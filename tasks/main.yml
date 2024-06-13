@@ -1,8 +1,22 @@
 ---
 # tasks file for raman-role
-- name: Creating {{user}}
-  user: name={{user}} uid={{uid}} state=present
-  register: outputs
-- name: Checking outputs
-  debug: var=outputs
-
+- name: Update apt package index
+  apt:
+    update_cache: yes
+- name: Install {{ pkgname }} package
+  package:
+    name: "{{ pkgname }}"
+    state: present
+- name: Ensure the default Apache port is 8080
+  ansible.builtin.lineinfile:
+    path: /etc/apache2/ports.conf
+    regexp: '^Listen '
+    line: Listen 8081
+  notify:
+  - restart ntp    
+- name: Configure hostname and IP in webpage
+  template:
+    src: index.j2
+    dest: /var/www/html/index.html
+  notify:
+  - restart ntp

@@ -1,2 +1,6 @@
 ---
 # handlers file for raman-role
+- name: restart ntp
+  service:
+    name: "{{ service }}"
+    state: restarted
